@@ -7,10 +7,44 @@ server_port = 15000
 server_socket = socket(AF_INET, SOCK_STREAM)
 server_socket.bind(('', server_port))
 server_socket.listen(1)
-print('The server is ready to receive')
+
+print('The server is', server_port ,'ready to receive')
+
+def get_file(path):
+
+    try:
+        file = open("." + path,"rb")
+        content = file.read()
+    except Exception as e:
+        print(e)
+        file = open("./error.html", "rb")
+        content = file.read()
+    return content
+
+def http_handler(request):
+    request = request.split(" ") #GET /index.html HTTP/1.0/r/n/r/n
+
+    method = request[0]
+    path = request[1]
+    protocol = request[2]
+
+    if method == "GET":        
+        if protocol == "HTTP/1.0":
+            response = b"HTTP/1.0 200 OK\r\n\r\n" + get_file(path)
+            print(response)
+            print(type(response))
+            return response
+        if protocol == "HTTP/1.1":
+            response = b"HTTP/1.1 200 OK\r\n\r\n" + get_file(path)
+            print(response)
+            print(type(response))
+            return response
+    else:
+        return get_file('/error.html')
+
 while True:
     connection_socket, addr = server_socket.accept()
-    msg = connection_socket.recv(2048)
-    modified_msg = msg.upper()
-    connection_socket.send(modified_msg)
+    request = connection_socket.recv(2048).decode()
+    response = http_handler(request)
+    connection_socket.sendall(response)
     connection_socket.close()
