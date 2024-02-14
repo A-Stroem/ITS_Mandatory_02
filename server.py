@@ -22,7 +22,7 @@ def get_file(path):
     return content
 
 def http_handler(request):
-    request = request.split(" ") #GET /index.html HTTP/1.0/r/n/r/n
+    request = request.split() #GET /index.html HTTP/1.0/r/n/r/n
 
     method = request[0]
     path = request[1]
