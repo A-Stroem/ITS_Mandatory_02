@@ -22,11 +22,15 @@ def get_file(path):
     return content
 
 def http_handler(request):
-    request = request.split(" ") #GET /index.html HTTP/1.0/r/n/r/n
+    print(f"Request: {request}")  # Debug print
+
+    request = request.split()  # Split on any whitespace
 
     method = request[0]
     path = request[1]
     protocol = request[2]
+
+    print(f"Protocol: {protocol}") 
 
     if method == "GET":        
         if protocol == "HTTP/1.0":
@@ -41,6 +45,9 @@ def http_handler(request):
             return response
     else:
         return get_file('/error.html')
+
+    # Add this line to return an error response when the method is not GET or the protocol is not supported
+    return b"HTTP/1.1 400 Bad Request\r\n\r\n"
 
 while True:
     connection_socket, addr = server_socket.accept()
